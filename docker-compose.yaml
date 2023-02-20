@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  db:
+    build:
+      context: .
+      target: db
+    networks: [hb]
+    environment:
+      POSTGRES_USER: hb
+      POSTGRES_PASSWORD: hb
+    ports:
+      - 5432:5432
+
+  web:
+    build:
+      context: .
+      target: dev
+    stdin_open: true
+    tty: true
+    command:
+      - python3
+      - manage.py
+      - runserver
+      - 0.0.0.0:8000
+    env_file:
+    - .env
+    networks: [hb]
+    volumes:
+      - .:/code
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+
+networks:
+  hb:
+  nonet:
+    internal: true
+    external: false
